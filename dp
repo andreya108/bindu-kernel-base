@@ -1,0 +1,7 @@
+
+
+for i in {76..108}
+do
+   j=`expr $i - 1`
+   wget https://www.kernel.org/pub/linux/kernel/v3.x/incr/patch-3.4.$j-$i.gz
+done
