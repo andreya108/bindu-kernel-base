@@ -403,7 +403,7 @@ static struct ubi_wl_entry *find_wl_entry(struct ubi_device *ubi,
 	 * such that fastmap can use the anchor PEB later. */
 	if (prev_e && !ubi->fm_disabled &&
 #ifdef CONFIG_MTD_UBI_FASTMAP
-			!ubi->fm && 
+			!ubi->fm &&
 #endif
 			e->pnum < UBI_FM_MAX_START)
 		return prev_e;
@@ -1020,7 +1020,7 @@ static int wear_leveling_worker(struct ubi_device *ubi, struct ubi_work *wrk,
 				int cancel)
 {
 	int erase_e2=1, err, scrubbing = 0, torture = 0, protect = 0, erroneous = 0;
-	int vol_id = -1, uninitialized_var(lnum);
+	int vol_id = -1, lnum = -1;
 #ifdef CONFIG_MTD_UBI_FASTMAP
 	int anchor = wrk->anchor;
 #endif
