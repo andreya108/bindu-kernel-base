@@ -178,8 +178,8 @@ static int usb_reset_and_verify_device(struct usb_device *udev);
 #define DEBUG
 #include <linux/proc_fs.h>
 #include <linux/uaccess.h>
-#include <net/sock.h> 
-#include <net/netlink.h> 
+#include <net/sock.h>
+#include <net/netlink.h>
 #include <linux/skbuff.h>
 
 static struct sock *netlink_sock;
@@ -454,44 +454,44 @@ int sprintf1(char * buf, const char *fmt, ...)
 	return i;
 }
 
-static void udp_reply(int pid,int seq,void *payload) 
-{ 
+static void udp_reply(int pid,int seq,void *payload)
+{
 	struct sk_buff *skb;
 	struct nlmsghdr *nlh;
 	int size=strlen(payload)+1;
 	int len = NLMSG_SPACE(size);
 	void *data;
 	int ret;
-	 
+
 	skb = alloc_skb(len, GFP_ATOMIC);
-	if (!skb) 
+	if (!skb)
 		return;
 	nlh= NLMSG_PUT(skb, pid, seq, 0, size);
 	nlh->nlmsg_flags = 0;
 	data=NLMSG_DATA(nlh);
 	memcpy(data, payload, size);
-	NETLINK_CB(skb).pid = 0; /* from kernel */ 
-	NETLINK_CB(skb).dst_group = 0; /* unicast */ 
+	NETLINK_CB(skb).pid = 0; /* from kernel */
+	NETLINK_CB(skb).dst_group = 0; /* unicast */
 	ret=netlink_unicast(netlink_sock, skb, pid, MSG_DONTWAIT);
-	if (ret <0) 
-	{ 
+	if (ret <0)
+	{
 		MYDBG("send failed\n");
 	}
-	return;	
-	 
-nlmsg_failure: /* Used by NLMSG_PUT */ 
-	if (skb) 
+	return;
+
+nlmsg_failure: /* Used by NLMSG_PUT */
+	if (skb)
 		kfree_skb(skb);
-} 
+}
 
 /* Receive messages from netlink socket. */
-static void udp_receive(struct sk_buff *skb) 
-{ 
+static void udp_receive(struct sk_buff *skb)
+{
 	MYDBG("");
 	u_int uid, pid, seq, sid;
 	void *data;
 	struct nlmsghdr *nlh;
-	 
+
 	nlh = (struct nlmsghdr *)skb->data;
 
 	/* global here */
@@ -505,8 +505,8 @@ static void udp_receive(struct sk_buff *skb)
 
 	char reply_data[16];
 	sprintf(reply_data, "%d", g_pid);
-	udp_reply(g_pid, 0, reply_data); 
-} 
+	udp_reply(g_pid, 0, reply_data);
+}
 
 
 
@@ -532,10 +532,10 @@ int usb11_session_control(enum SESSION_CONTROL_ACTION action)
 
 	if(action == START_SESSION)
 		musbfsh_start_session();
-	else if(action == STOP_SESSION) 
+	else if(action == STOP_SESSION)
 	{
 		//musbfsh_stop_session();
-		if(!is_usb11_enabled())		
+		if(!is_usb11_enabled())
 		{
 			mt65xx_usb11_mac_reset_and_phy_stress_set();
 		}
@@ -568,7 +568,7 @@ static ssize_t musbfsh_ic_usb_cmd_proc_entry(struct file *file, const char *buf,
 	int ret = copy_from_user((char *)&ic_cmd, buf, len);
 	struct timeval tv_begin, tv_end;
 	struct usb_device *udev;
-	int result; 
+	int result;
 
 
 	do_gettimeofday(&tv_begin);
@@ -615,7 +615,7 @@ static ssize_t musbfsh_ic_usb_cmd_proc_entry(struct file *file, const char *buf,
 			break;
 		case 't':
 			MYDBG("create tmp proc\n");
-			create_ic_tmp_entry();		
+			create_ic_tmp_entry();
 			break;
 		default:
 			MYDBG("maybe u forget to add break\n");
@@ -626,7 +626,7 @@ static ssize_t musbfsh_ic_usb_cmd_proc_entry(struct file *file, const char *buf,
 auto_resume_fail:
 	usb_autosuspend_device(udev);
 	usb_unlock_device(udev);
-	
+
 	do_gettimeofday(&tv_end);
 	MYDBG("time spent, sec : %d, usec : %d, <<<===================\n", (tv_end.tv_sec - tv_begin.tv_sec), (tv_end.tv_usec - tv_begin.tv_usec));
 
@@ -657,24 +657,24 @@ void ic_usb_test_device_ep0(char action)
 	{
 		case '1':
 			ret = usb_control_msg(g_sim_dev, usb_rcvctrlpipe(g_sim_dev, 0),
-					USB_REQ_GET_DESCRIPTOR, 
-					USB_DIR_IN, 
-					USB_DT_DEVICE << 8, 
+					USB_REQ_GET_DESCRIPTOR,
+					USB_DIR_IN,
+					USB_DT_DEVICE << 8,
 					0,
 					data_buf,
-					64, 
+					64,
 					USB_CTRL_GET_TIMEOUT);
 			break;
 		case '2':
 			while(i++ < TEST_CNT)
 			{
 				ret = usb_control_msg(g_sim_dev, usb_rcvctrlpipe(g_sim_dev, 0),
-						USB_REQ_GET_DESCRIPTOR, 
-						USB_DIR_IN, 
-						USB_DT_DEVICE << 8, 
+						USB_REQ_GET_DESCRIPTOR,
+						USB_DIR_IN,
+						USB_DT_DEVICE << 8,
 						0,
 						data_buf,
-						64, 
+						64,
 						USB_CTRL_GET_TIMEOUT);
 				if (ret < 0) {
 					MYDBG("test ep fail, ret : %d\n", ret);
@@ -688,7 +688,7 @@ void ic_usb_test_device_ep0(char action)
 			break;
 		default:
 			break;
-				
+
 	}
 
 
@@ -711,12 +711,12 @@ void ic_usb_test_hub_ep0(void)
 
 	udev = gt_rootHub->hdev;
 	ret = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
-			USB_REQ_GET_DESCRIPTOR, 
-			USB_DIR_IN, 
-			USB_DT_DEVICE << 8, 
+			USB_REQ_GET_DESCRIPTOR,
+			USB_DIR_IN,
+			USB_DT_DEVICE << 8,
 			0,
 			data_buf,
-			64, 
+			64,
 			USB_CTRL_GET_TIMEOUT);
 
 	if (ret < 0) {
@@ -737,7 +737,7 @@ static ssize_t musbfsh_ic_tmp_proc_entry(struct file *file, const char *buf, uns
 
 	if (ret < 0)
 		return -1;
-	
+
 
 	struct usb_device *udev;
 	udev = gt_rootHub->hdev;
@@ -751,7 +751,7 @@ static ssize_t musbfsh_ic_tmp_proc_entry(struct file *file, const char *buf, uns
 	}
 	else
 		MYDBG("autoresume !!!, result : %d\n", result);
-	
+
 	/* apply action here */
 	if(cmd[0] == '0')
 	{
@@ -777,7 +777,7 @@ static ssize_t musbfsh_ic_tmp_proc_entry(struct file *file, const char *buf, uns
 	{
 		MYDBG("");
 		char payload[1024];
-		udp_reply(g_pid, 0, "HELLO, SS7_IC_USB!!!"); 
+		udp_reply(g_pid, 0, "HELLO, SS7_IC_USB!!!");
 	}
 	else if(cmd[0] == '5')
 	{
@@ -846,7 +846,7 @@ static ssize_t musbfsh_ic_tmp_proc_entry(struct file *file, const char *buf, uns
 	{
 		create_icusb_sysfs_attr();
 	}
-	
+
 	if(cmd[0] == 'z')
 	{
 		my_attr_test_procedure();
@@ -939,24 +939,24 @@ void ic_usb_test_device_ep0(char action)
 	{
 		case '1':
 			ret = usb_control_msg(g_sim_dev, usb_rcvctrlpipe(g_sim_dev, 0),
-					USB_REQ_GET_DESCRIPTOR, 
-					USB_DIR_IN, 
-					USB_DT_DEVICE << 8, 
+					USB_REQ_GET_DESCRIPTOR,
+					USB_DIR_IN,
+					USB_DT_DEVICE << 8,
 					0,
 					data_buf,
-					64, 
+					64,
 					USB_CTRL_GET_TIMEOUT);
 			break;
 		case '2':
 			while(i++ < TEST_CNT)
 			{
 				ret = usb_control_msg(g_sim_dev, usb_rcvctrlpipe(g_sim_dev, 0),
-						USB_REQ_GET_DESCRIPTOR, 
-						USB_DIR_IN, 
-						USB_DT_DEVICE << 8, 
+						USB_REQ_GET_DESCRIPTOR,
+						USB_DIR_IN,
+						USB_DT_DEVICE << 8,
 						0,
 						data_buf,
-						64, 
+						64,
 						USB_CTRL_GET_TIMEOUT);
 				if (ret < 0) {
 					MYDBG("test ep fail, ret : %d\n", ret);
@@ -970,7 +970,7 @@ void ic_usb_test_device_ep0(char action)
 			break;
 		default:
 			break;
-				
+
 	}
 
 
@@ -993,7 +993,7 @@ static ssize_t musbfsh_ic_tmp_proc_entry(struct file *file, const char *buf, uns
 
 	if (ret < 0)
 		return -1;
-	
+
 
 	struct usb_device *udev;
 	udev = gt_rootHub->hdev;
@@ -1007,7 +1007,7 @@ static ssize_t musbfsh_ic_tmp_proc_entry(struct file *file, const char *buf, uns
 	}
 	else
 		MYDBG("autoresume !!!, result : %d\n", result);
-	
+
 	if(cmd[0] == 'g')
 	{
 		mt65xx_usb11_suspend_resume_test();
@@ -1537,7 +1537,7 @@ static int hub_hub_status(struct usb_hub *hub,
 			"%s failed (err = %d)\n", __func__, ret);
 	else {
 		*status = le16_to_cpu(hub->status->hub.wHubStatus);
-		*change = le16_to_cpu(hub->status->hub.wHubChange); 
+		*change = le16_to_cpu(hub->status->hub.wHubChange);
 		ret = 0;
 	}
 	mutex_unlock(&hub->status_mutex);
@@ -2353,12 +2353,12 @@ descriptor_error:
 	{
 		getRootHub = 1;
 		gt_rootHub = hub;
-		
+
 		/* netlink sock create */
 		netlink_sock = netlink_kernel_create(&init_net, NETLINK_USERSOCK, 0,udp_receive, NULL, THIS_MODULE);
 	}
 #endif
-	
+
 #ifdef ORG_SUSPEND_RESUME_TEST
 	static int getRootHub = 0;
 	if(!getRootHub)
@@ -2745,7 +2745,7 @@ void usb_disconnect(struct usb_device **pdev)
 	hub_free_dev(udev);
 
 	put_device(&udev->dev);
-	
+
 #ifdef MTK_ICUSB_SUPPORT
 
 	set_usb11_sts_disconnect_done();
@@ -3125,9 +3125,6 @@ static unsigned hub_is_wusb(struct usb_hub *hub)
 #define HUB_LONG_RESET_TIME	200
 #define HUB_RESET_TIMEOUT	800
 
-static int hub_port_reset(struct usb_hub *hub, int port1,
-			struct usb_device *udev, unsigned int delay, bool warm);
-
 /* Is a USB 3.0 port in the Inactive or Complinance Mode state?
  * Port worm reset is required to recover
  */
@@ -3209,44 +3206,6 @@ delay:
 	return -EBUSY;
 }
 
-static void hub_port_finish_reset(struct usb_hub *hub, int port1,
-			struct usb_device *udev, int *status)
-{
-	switch (*status) {
-	case 0:
-		/* TRSTRCY = 10 ms; plus some extra */
-		msleep(10 + 40);
-		if (udev) {
-			struct usb_hcd *hcd = bus_to_hcd(udev->bus);
-
-			update_devnum(udev, 0);
-			/* The xHC may think the device is already reset,
-			 * so ignore the status.
-			 */
-			if (hcd->driver->reset_device)
-				hcd->driver->reset_device(hcd, udev);
-		}
-		/* FALL THROUGH */
-	case -ENOTCONN:
-	case -ENODEV:
-		clear_port_feature(hub->hdev,
-				port1, USB_PORT_FEAT_C_RESET);
-		if (hub_is_superspeed(hub->hdev)) {
-			clear_port_feature(hub->hdev, port1,
-					USB_PORT_FEAT_C_BH_PORT_RESET);
-			clear_port_feature(hub->hdev, port1,
-					USB_PORT_FEAT_C_PORT_LINK_STATE);
-			clear_port_feature(hub->hdev, port1,
-					USB_PORT_FEAT_C_CONNECTION);
-		}
-		if (udev)
-			usb_set_device_state(udev, *status
-					? USB_STATE_NOTATTACHED
-					: USB_STATE_DEFAULT);
-		break;
-	}
-}
-
 /* Handle port reset and port warm(BH) reset (for USB3 protocol ports) */
 static int hub_port_reset(struct usb_hub *hub, int port1,
 			struct usb_device *udev, unsigned int delay, bool warm)
@@ -3269,13 +3228,9 @@ static int hub_port_reset(struct usb_hub *hub, int port1,
 		 * If the caller hasn't explicitly requested a warm reset,
 		 * double check and see if one is needed.
 		 */
-		status = hub_port_status(hub, port1,
-					&portstatus, &portchange);
-		if (status < 0)
-			goto done;
-
-		if (hub_port_warm_reset_required(hub, portstatus))
-			warm = true;
+		if (hub_port_status(hub, port1, &portstatus, &portchange) == 0)
+			if (hub_port_warm_reset_required(hub, portstatus))
+				warm = true;
 	}
 
 	/* Reset the port */
@@ -3306,12 +3261,21 @@ static int hub_port_reset(struct usb_hub *hub, int port1,
 		MYDBG("");
 		/* return on disconnect or reset */
 		if (status == 0 || status == -ENOTCONN || status == -ENODEV) {
-			MYDBG("");
-			hub_port_finish_reset(hub, port1, udev, &status);
+
+            MYDBG("");
+			clear_port_feature(hub->hdev, port1,
+					USB_PORT_FEAT_C_RESET);
 			MYDBG("");
 
 			if (!hub_is_superspeed(hub->hdev))
 				goto done;
+
+            clear_port_feature(hub->hdev, port1,
+					USB_PORT_FEAT_C_BH_PORT_RESET);
+			clear_port_feature(hub->hdev, port1,
+					USB_PORT_FEAT_C_PORT_LINK_STATE);
+			clear_port_feature(hub->hdev, port1,
+					USB_PORT_FEAT_C_CONNECTION);
 
 			/*
 			 * If a USB 3.0 device migrates from reset to an error
@@ -3349,6 +3313,26 @@ static int hub_port_reset(struct usb_hub *hub, int port1,
 		port1);
 
 done:
+	if (status == 0) {
+		/* TRSTRCY = 10 ms; plus some extra */
+		msleep(10 + 40);
+		if (udev) {
+			struct usb_hcd *hcd = bus_to_hcd(udev->bus);
+
+			update_devnum(udev, 0);
+			/* The xHC may think the device is already reset,
+			 * so ignore the status.
+			 */
+			if (hcd->driver->reset_device)
+				hcd->driver->reset_device(hcd, udev);
+
+			usb_set_device_state(udev, USB_STATE_DEFAULT);
+		}
+	} else {
+		if (udev)
+			usb_set_device_state(udev, USB_STATE_NOTATTACHED);
+	}
+
 	if (!hub_is_superspeed(hub->hdev))
 	{
 		MYDBG("");
@@ -3954,7 +3938,7 @@ EXPORT_SYMBOL_GPL(usb_root_hub_lost_power);
  * Between connect detection and reset signaling there must be a delay
  * of 100ms at least for debounce and power-settling.  The corresponding
  * timer shall restart whenever the downstream port detects a disconnect.
- * 
+ *
  * Apparently there are some bluetooth and irda-dongles and a number of
  * low-speed devices for which this debounce period may last over a second.
  * Not covered by the spec - but easy to deal with.
@@ -4067,7 +4051,7 @@ hub_port_init (struct usb_hub *hub, struct usb_device *udev, int port1,
 	const char		*speed;
 	int			devnum = udev->devnum;
 
-	dump_stack(); 
+	dump_stack();
 	/* root hub ports have a slightly longer reset period
 	 * (from USB 2.0 spec, section 7.1.7.5)
 	 */
@@ -4086,9 +4070,9 @@ hub_port_init (struct usb_hub *hub, struct usb_device *udev, int port1,
 
 	/* Reset the device; full speed may morph to high speed */
 	/* FIXME a USB 2.0 device may morph into SuperSpeed on reset. */
-	MYDBG(""); 
+	MYDBG("");
 	retval = hub_port_reset(hub, port1, udev, delay, false);
-	MYDBG(""); 
+	MYDBG("");
 	if (retval < 0)		/* error or disconnect */
 		goto fail;
 	/* success, speed is known */
@@ -4154,7 +4138,7 @@ hub_port_init (struct usb_hub *hub, struct usb_device *udev, int port1,
 		udev->tt = &hub->tt;
 		udev->ttport = port1;
 	}
- 
+
 	/* Why interleave GET_DESCRIPTOR and SET_ADDRESS this way?
 	 * Because device hardware and firmware is sometimes buggy in
 	 * this area, and this is how Linux has done it for ages.
@@ -4315,7 +4299,7 @@ hub_port_init (struct usb_hub *hub, struct usb_device *udev, int port1,
 		udev->ep0.desc.wMaxPacketSize = cpu_to_le16(i);
 		usb_ep0_reinit(udev);
 	}
-  
+
 	retval = usb_get_device_descriptor(udev, USB_DT_DEVICE_SIZE);
 	if (retval < (signed)sizeof(udev->descriptor)) {
 		dev_err(&udev->dev, "device descriptor read/all, error %d\n",
@@ -4554,10 +4538,10 @@ static void hub_port_connect_change(struct usb_hub *hub, int port1,
 		status = hub_port_init(hub, udev, port1, i);
 		if (status < 0)
 		{
-			MYDBG(""); 
+			MYDBG("");
 			goto loop;
 		}
-		MYDBG(""); 
+		MYDBG("");
 
 		usb_detect_quirks(udev);
 		if (udev->quirks & USB_QUIRK_DELAY_INIT)
@@ -4593,7 +4577,7 @@ static void hub_port_connect_change(struct usb_hub *hub, int port1,
 				goto loop_disable;
 			}
 		}
- 
+
 		/* check for devices running slower than they could */
 		if (le16_to_cpu(udev->descriptor.bcdUSB) >= 0x0200
 				&& udev->speed == USB_SPEED_FULL
@@ -4659,7 +4643,7 @@ loop:
 			!(hcd->driver->port_handed_over)(hcd, port1))
 		dev_err(hub_dev, "unable to enumerate USB device on port %d\n",
 				port1);
- 
+
 done:
 	hub_port_disable(hub, port1, 1);
 	if (hcd->driver->relinquish_port && !hub->hdev->parent)
@@ -4828,7 +4812,7 @@ static void hub_events(void)
 				 * EM interference sometimes causes badly
 				 * shielded USB devices to be shutdown by
 				 * the hub, this hack enables them again.
-				 * Works at least with mouse driver. 
+				 * Works at least with mouse driver.
 				 */
 				if (!(portstatus & USB_PORT_STAT_ENABLE)
 				    && !connect_change
@@ -5190,7 +5174,7 @@ static int usb_reset_and_verify_device(struct usb_device *udev)
 
 	if (ret < 0)
 		goto re_enumerate;
- 
+
 	/* Device might have changed firmware (DFU or similar) */
 	if (descriptors_changed(udev, &descriptor)) {
 		dev_info(&udev->dev, "device firmware changed\n");
@@ -5263,7 +5247,7 @@ static int usb_reset_and_verify_device(struct usb_device *udev)
 
 done:
 	return 0;
- 
+
 re_enumerate:
 	hub_port_logical_disconnect(parent_hub, port1);
 	return -ENODEV;
