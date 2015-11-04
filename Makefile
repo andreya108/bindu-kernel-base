@@ -347,12 +347,24 @@ KALLSYMS	= scripts/kallsyms
 PERL		= perl
 CHECK		= sparse
 
+#PTFLAGS	= -mcpu=cortex-a7 -mfpu=neon-vfpv4 \
+#		-ffast-math -fsingle-precision-constant \
+#		-fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr \
+#		-funsafe-math-optimizations -marm -std=gnu89
+
+OPTFLAGS    = -DNDEBUG -O3 -ffast-math -mtune=cortex-a7 -mcpu=cortex-a7 -marm -mfpu=neon-vfpv4 \
+			  -ftree-vectorize -mvectorize-with-neon-quad -munaligned-access -fgcse-lm -fgcse-sm \
+			  -fsingle-precision-constant -fforce-addr -fsched-spec-load -funroll-loops \
+			  -fpredictive-commoning -floop-nest-optimize \
+			  -ftree-loop-linear -floop-interchange -floop-strip-mine \
+			  -floop-block -floop-flatten
+
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
-CFLAGS_KERNEL	=
+CFLAGS_KERNEL	= $(OPTFLAGS)
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
@@ -370,7 +382,9 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
-		   -fno-delete-null-pointer-checks
+		   -fno-delete-null-pointer-checks \
+		   -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=softfp \
+		   -funsafe-math-optimizations -ffast-math -marm
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
@@ -577,7 +591,7 @@ all: vmlinux
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS	+= -Os
 else
-KBUILD_CFLAGS	+= -O2
+KBUILD_CFLAGS	+= -O3 -fmodulo-sched -fmodulo-sched-allow-regmoves -fno-tree-vectorize -fno-inline-functions
 endif
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
