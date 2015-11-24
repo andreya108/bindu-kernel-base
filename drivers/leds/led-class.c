@@ -29,7 +29,7 @@ static void led_update_brightness(struct led_classdev *led_cdev)
 		led_cdev->brightness = led_cdev->brightness_get(led_cdev);
 }
 
-static ssize_t led_brightness_show(struct device *dev, 
+static ssize_t led_brightness_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
@@ -88,7 +88,7 @@ static void led_timer_function(unsigned long data)
 	unsigned long brightness;
 	unsigned long delay;
 
-	printk("[LED][led_timer_function] %d %d\n", brightness, delay);
+//	printk("[LED][led_timer_function] %d %d\n", brightness, delay);
 
 	if (!led_cdev->blink_delay_on || !led_cdev->blink_delay_off) {
 		led_set_brightness(led_cdev, LED_OFF);
