@@ -354,10 +354,8 @@ CHECK		= sparse
 
 OPTFLAGS    = -DNDEBUG -O3 -ffast-math -mtune=cortex-a7 -mcpu=cortex-a7 -marm -mfpu=neon-vfpv4 \
 			  -ftree-vectorize -mvectorize-with-neon-quad -munaligned-access -fgcse-lm -fgcse-sm \
-			  -fsingle-precision-constant -fforce-addr -fsched-spec-load -funroll-loops \
-			  -fpredictive-commoning -floop-nest-optimize \
-			  -ftree-loop-linear -floop-interchange -floop-strip-mine \
-			  -floop-block -floop-flatten
+			  -fsingle-precision-constant -fforce-addr -fsched-spec-load \
+			  -fpredictive-commoning
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
