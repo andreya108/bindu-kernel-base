@@ -26,15 +26,15 @@ EXPORT_SYMBOL_GPL(leds_list);
 
 static void led_stop_software_blink(struct led_classdev *led_cdev)
 {
-	printk("[LED][led_stop_software_blink]\n");
+//	printk("[LED.CORE] [led_stop_software_blink]\n");
 	/* deactivate previous settings */
 	del_timer_sync(&led_cdev->blink_timer);
 	led_cdev->blink_delay_on = 0;
 	led_cdev->blink_delay_off = 0;
 
 // andreya108 fix orphaned wakelock
-	if (led_cdev->blink_set) 
-	    led_cdev->blink_set(led_cdev, &led_cdev->blink_delay_on, &led_cdev->blink_delay_off);
+//	if (led_cdev->blink_set)
+//	    led_cdev->blink_set(led_cdev, &led_cdev->blink_delay_on, &led_cdev->blink_delay_off);
 // andreya108 fix orphaned wakelock
 }
 
@@ -43,7 +43,7 @@ static void led_set_software_blink(struct led_classdev *led_cdev,
 				   unsigned long delay_off)
 {
 	int current_brightness;
-	printk("[LED][led_set_software_blink] %d, %d\n", delay_on, delay_off);
+//	printk("[LED.CORE] [led_set_software_blink] %d, %d\n", delay_on, delay_off);
 
 	current_brightness = led_get_brightness(led_cdev);
 	if (current_brightness)
@@ -79,7 +79,7 @@ void led_blink_set(struct led_classdev *led_cdev,
 		   unsigned long *delay_on,
 		   unsigned long *delay_off)
 {
-	printk("[LED][led_blink_set] %d, %d\n", *delay_on, *delay_off);
+//	printk("[LED.CORE] [led_blink_set] %d, %d\n", *delay_on, *delay_off);
 	del_timer_sync(&led_cdev->blink_timer);
 
 	if (led_cdev->blink_set &&
@@ -97,7 +97,16 @@ EXPORT_SYMBOL(led_blink_set);
 void led_brightness_set(struct led_classdev *led_cdev,
 			enum led_brightness brightness)
 {
-	printk("[LED][led_brightness_set] %d\n", brightness);
+    unsigned long zero_on = 0;
+    unsigned long zero_off = 0;
+//	printk("[LED.CORE] [led_brightness_set] %d\n", brightness);
+// andreya108 stop blink
+    if (brightness==0 && led_cdev->blink_set) {
+	    printk("[LED.CORE] [led_brightness_set] force stop blinking!\n");
+//        led_blink_set(led_cdev, &zero_on, &zero_off);
+        led_cdev->blink_set(led_cdev, &zero_on, &zero_off);
+    }
+// andreya108 stop blink
 	led_stop_software_blink(led_cdev);
 	led_cdev->brightness_set(led_cdev, brightness);
 }
