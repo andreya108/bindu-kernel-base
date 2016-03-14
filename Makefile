@@ -355,7 +355,7 @@ CHECK		= sparse
 OPTFLAGS    = -DNDEBUG -O3 -ffast-math -mtune=cortex-a7 -mcpu=cortex-a7 -marm -mfpu=neon-vfpv4 \
 			  -ftree-vectorize -mvectorize-with-neon-quad -munaligned-access -fgcse-lm -fgcse-sm \
 			  -fsingle-precision-constant -fforce-addr -fsched-spec-load \
-			  -fpredictive-commoning
+			  -fpredictive-commoning $(EXTRA_OPTFLAGS)
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
