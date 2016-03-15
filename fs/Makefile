@@ -139,3 +139,4 @@ obj-$(CONFIG_YAFFS_FS)		+= yaffs2/
 # lenovo.sw : add for /data low memory save
 obj-m                           += lowmemorydetect.o
 # lenovo.sw : end
+obj-$(CONFIG_DYNAMIC_FSYNC) 	+= dyn_sync_cntrl.o

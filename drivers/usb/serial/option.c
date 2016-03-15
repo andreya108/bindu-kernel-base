@@ -85,6 +85,7 @@ static void option_instat_callback(struct urb *urb);
 #define HUAWEI_PRODUCT_K4505			0x1464
 #define HUAWEI_PRODUCT_K3765			0x1465
 #define HUAWEI_PRODUCT_K4605			0x14C6
+#define HUAWEI_PRODUCT_E173S6			0x1C07
 #define HW_USB_DEVICE_AND_INTERFACE_INFO(vend, cl, sc, pr) \
 	.match_flags = USB_DEVICE_ID_MATCH_INT_INFO \
 		| USB_DEVICE_ID_MATCH_VENDOR, \
@@ -400,7 +401,7 @@ static void option_instat_callback(struct urb *urb);
 #define CELOT_VENDOR_ID				0x211f
 #define CELOT_PRODUCT_CT680M			0x6801
 
-/* SS products */
+/* Samsung products */
 #define SAMSUNG_VENDOR_ID                       0x04e8
 #define SAMSUNG_PRODUCT_GT_B3730                0x6889
 
@@ -1733,7 +1734,7 @@ static const struct usb_device_id option_ids[] = {
 	{ USB_DEVICE(OLIVETTI_VENDOR_ID, OLIVETTI_PRODUCT_OLICARD500),
 		.driver_info = (kernel_ulong_t)&net_intf4_blacklist },
 	{ USB_DEVICE(CELOT_VENDOR_ID, CELOT_PRODUCT_CT680M) }, /* CT-650 CDMA 450 1xEVDO modem */
-	{ USB_DEVICE_AND_INTERFACE_INFO(SAMSUNG_VENDOR_ID, SAMSUNG_PRODUCT_GT_B3730, USB_CLASS_CDC_DATA, 0x00, 0x00) }, /* SS GT-B3730 LTE USB modem.*/
+	{ USB_DEVICE_AND_INTERFACE_INFO(SAMSUNG_VENDOR_ID, SAMSUNG_PRODUCT_GT_B3730, USB_CLASS_CDC_DATA, 0x00, 0x00) }, /* Samsung GT-B3730 LTE USB modem.*/
 	{ USB_DEVICE(YUGA_VENDOR_ID, YUGA_PRODUCT_CEM600) },
 	{ USB_DEVICE(YUGA_VENDOR_ID, YUGA_PRODUCT_CEM610) },
 	{ USB_DEVICE(YUGA_VENDOR_ID, YUGA_PRODUCT_CEM500) },
@@ -1929,7 +1930,7 @@ static int option_probe(struct usb_serial *serial,
 		(const struct option_blacklist_info *) id->driver_info))
 		return -ENODEV;
 
-	/* Don't bind network interface on SS GT-B3730, it is handled by a separate module */
+	/* Don't bind network interface on Samsung GT-B3730, it is handled by a separate module */
 	if (serial->dev->descriptor.idVendor == SAMSUNG_VENDOR_ID &&
 		serial->dev->descriptor.idProduct == SAMSUNG_PRODUCT_GT_B3730 &&
 		serial->interface->cur_altsetting->desc.bInterfaceClass != USB_CLASS_CDC_DATA)
