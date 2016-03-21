@@ -40,7 +40,6 @@ config FRANDOM
 	  To compile this driver as a module, choose M here: the module will be called
 	  frandom.
 
-
 config STALDRV
 	bool "Stallion multiport serial support"
 	depends on SERIAL_NONSTANDARD

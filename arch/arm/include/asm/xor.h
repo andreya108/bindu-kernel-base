@@ -7,7 +7,10 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+#include <linux/hardirq.h>
 #include <asm-generic/xor.h>
+#include <asm/hwcap.h>
+#include <asm/neon.h>
 
 #define __XOR(a1, a2) a1 ^= a2
 

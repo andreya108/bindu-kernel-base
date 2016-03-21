@@ -205,18 +205,26 @@ void __cpu_die(unsigned int cpu)
 void __ref cpu_die(void)
 {
 	unsigned int cpu = smp_processor_id();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 51, 0);
+#endif
 
 	idle_task_exit();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 52, 0);
+#endif
 
 	local_irq_disable();
 	mb();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 53, 0);
+#endif
 
 	/* Tell __cpu_die() that this CPU is now safe to dispose of */
 	complete(&cpu_died);
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 54, 0);
+#endif
 
 	/*
 	 * actual CPU shutdown procedure is at least platform (if not
@@ -261,7 +269,9 @@ asmlinkage void __cpuinit secondary_start_kernel(void)
 	struct mm_struct *mm = &init_mm;
 	unsigned int cpu = smp_processor_id();
 
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 1, 0);
+#endif
 	/*
 	 * The identity mapping is uncached (strongly ordered), so
 	 * switch away from it before attempting any exclusive accesses.
@@ -269,7 +279,9 @@ asmlinkage void __cpuinit secondary_start_kernel(void)
 	cpu_switch_mm(mm->pgd, mm);
 	enter_lazy_tlb(mm, current);
 	local_flush_tlb_all();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 2, 0);
+#endif
 
 	/*
 	 * All kernel threads share the same mm context; grab a
@@ -278,30 +290,44 @@ asmlinkage void __cpuinit secondary_start_kernel(void)
 	atomic_inc(&mm->mm_count);
 	current->active_mm = mm;
 	cpumask_set_cpu(cpu, mm_cpumask(mm));
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 3, 0);
+#endif
 
 	printk("CPU%u: Booted secondary processor\n", cpu);
 
 	cpu_init();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 4, 0);
+#endif
 	preempt_disable();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 5, 0);
+#endif
 	trace_hardirqs_off();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 6, 0);
+#endif
 
 	/*
 	 * Give the platform a chance to do its own initialisation.
 	 */
 	platform_secondary_init(cpu);
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 7, 0);
+#endif
 
 	notify_cpu_starting(cpu);
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 8, 0);
+#endif
 
 	calibrate_delay();
 
 	smp_store_cpu_info(cpu);
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 9, 0);
+#endif
 
 	/*
 	 * OK, now it's safe to let the boot CPU continue.  Wait for
@@ -309,20 +335,30 @@ asmlinkage void __cpuinit secondary_start_kernel(void)
 	 * before we continue - which happens after __cpu_up returns.
 	 */
 	set_cpu_online(cpu, true);
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 10, 0);
+#endif
 	complete(&cpu_running);
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 11, 0);
+#endif
 
 	/*
 	 * Setup the percpu timer for this CPU.
 	 */
 	percpu_timer_setup();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 12, 0);
+#endif
 
 	local_irq_enable();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 13, 0);
+#endif
 	local_fiq_enable();
+#ifdef CONFIG_MTK_AEE_FEATURE
 	aee_rr_rec_hoplug(cpu, 14, 0);
+#endif
 
 	/*
 	 * OK, it's off to the idle thread for us

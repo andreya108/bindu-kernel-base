@@ -19,7 +19,9 @@
 #include <linux/sched.h>
 #include <linux/highmem.h>
 #include <linux/perf_event.h>
+#ifdef CONFIG_MTK_AEE_FEATURE
 #include <linux/aee.h>
+#endif
 
 #include <asm/exception.h>
 #include <asm/pgtable.h>
@@ -549,6 +551,7 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 	int ret;
 	struct siginfo info;
 
+#ifdef CONFIG_MTK_AEE_FEATURE
 	if (!user_mode(regs)) {
 		thread->cpu_excp++;
 		if (thread->cpu_excp == 1) {
@@ -575,6 +578,10 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
 		}
 		return;
 	}
+#else
+	if (!inf->fn(addr, fsr & ~FSR_LNX_PF, regs))
+		return;
+#endif
 
 	printk(KERN_ALERT "Unhandled fault: %s (0x%03x) at 0x%08lx\n",
 		inf->name, fsr, addr);
@@ -607,6 +614,7 @@ do_PrefetchAbort(unsigned long addr, unsigned int ifsr, struct pt_regs *regs)
 	int ret;
 	struct siginfo info;
 
+#ifdef CONFIG_MTK_AEE_FEATURE
 	if (!user_mode(regs)) {
 		thread->cpu_excp++;
 		if (thread->cpu_excp == 1) {
@@ -632,7 +640,10 @@ do_PrefetchAbort(unsigned long addr, unsigned int ifsr, struct pt_regs *regs)
 		}
 		return;
 	}
-
+#else
+	if (!inf->fn(addr, ifsr | FSR_LNX_PF, regs))
+		return;
+#endif
 	printk(KERN_ALERT "Unhandled prefetch abort: %s (0x%03x) at 0x%08lx\n",
 		inf->name, ifsr, addr);
 

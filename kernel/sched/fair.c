@@ -7119,7 +7119,6 @@ void trigger_load_balance(struct rq *rq, int cpu)
 #endif
 }
 
-
 static void rq_online_fair(struct rq *rq)
 {
 	update_sysctl();

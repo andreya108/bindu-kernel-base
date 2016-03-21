@@ -239,7 +239,8 @@ struct cpumask *get_domain_cpus(int cluster_id, bool exclusiveOffline)
 	struct	cpu_domain *cluster;
 	struct list_head *pos;
 	
-	if(!list_empty(&cpu_domains)) {
+	if(!list_empty(&cpu_domains))
+	{
 		list_for_each(pos, &cpu_domains) {
 			cluster = list_entry(pos, struct cpu_domain, cpu_domains);
 			if(cluster->cluster_id == cluster_id) //Found
@@ -251,18 +252,8 @@ struct cpumask *get_domain_cpus(int cluster_id, bool exclusiveOffline)
 		if(!found) {				
 			return 0;
 		}
-		if(exclusiveOffline) {
-			/* for debug */ 	
-//			if(cpumask_empty(&cluster->cpus)) {
-//				struct cpumask cpu_mask;
-//				cpumask_and(&cpu_mask, &cluster->possible_cpus, cpu_online_mask);
-//				if(!cpumask_empty(&cpu_mask)) {
-//					printk(KERN_EMERG "get_domain_cpus: cluster%d, *cpus = %lu, onlineCPU=%lu\n",
-//						cluster_id, cluster->cpus.bits[0],cpu_online_mask->bits[0]);
-//				}
-//			}				
+		if(exclusiveOffline)
 			return &cluster->cpus;
-		}
 		else
 			return &cluster->possible_cpus;
 	}

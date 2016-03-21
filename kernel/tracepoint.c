@@ -630,7 +630,7 @@ EXPORT_SYMBOL_GPL(tracepoint_iter_reset);
 #if defined(CONFIG_MODULES) && defined(CONFIG_FTRACE_MODULE_SUPPORT)
 bool trace_module_has_bad_taint(struct module *mod)
 {
-       return mod->taints & ~((1 << TAINT_OOT_MODULE) | (1 << TAINT_CRAP));
+	return mod->taints & ~((1 << TAINT_OOT_MODULE) | (1 << TAINT_CRAP));
 }
 
 static int tracepoint_module_coming(struct module *mod)

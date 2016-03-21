@@ -34,7 +34,9 @@
 #include <asm/unwind.h>
 #include <asm/tls.h>
 #include <asm/system_misc.h>
+#ifdef CONFIG_MTK_AEE_FEATURE
 #include <linux/aee.h>
+#endif
 #include "signal.h"
 
 static const char *handler[]= {
@@ -253,7 +255,9 @@ static int __die(const char *str, int err, struct thread_info *thread, struct pt
 	if (ret == NOTIFY_STOP)
         return ret;
 
-        ipanic_oops_start();
+#ifdef CONFIG_MTK_AEE_FEATURE
+    ipanic_oops_start();
+#endif
 	print_modules();
 	__show_regs(regs);
 	printk(KERN_EMERG "Process %.*s (pid: %d, stack limit = 0x%p)\n",
@@ -265,8 +269,9 @@ static int __die(const char *str, int err, struct thread_info *thread, struct pt
 		dump_backtrace(regs, tsk);
 		dump_instr(KERN_EMERG, regs);
 	}
-
-        ipanic_oops_end();
+#ifdef CONFIG_MTK_AEE_FEATURE
+    ipanic_oops_end();
+#endif
 	return ret;
 }
 
@@ -384,11 +389,14 @@ static int call_undef_hook(struct pt_regs *regs, unsigned int instr)
 
 asmlinkage void __exception do_undefinstr(struct pt_regs *regs)
 {
+#ifdef CONFIG_MTK_AEE_FEATURE
 	struct thread_info *thread = current_thread_info();
+#endif
 	unsigned int instr;
 	siginfo_t info;
 	void __user *pc;
 
+#ifdef CONFIG_MTK_AEE_FEATURE
 	if (!user_mode(regs)) {
 		thread->cpu_excp++;
 		if (thread->cpu_excp == 1) {
@@ -399,7 +407,7 @@ asmlinkage void __exception do_undefinstr(struct pt_regs *regs)
 			aee_stop_nested_panic(regs);
 		}
 	}
-
+#endif
 	pc = (void __user *)instruction_pointer(regs);
 
 	if (processor_mode(regs) == SVC_MODE) {
@@ -428,7 +436,11 @@ asmlinkage void __exception do_undefinstr(struct pt_regs *regs)
 	}
 
 	if (call_undef_hook(regs, instr) == 0)
-		goto do_undefinstr_exit;
+#ifdef CONFIG_MTK_AEE_FEATURE
+        goto do_undefinstr_exit;
+#else
+        return;
+#endif
 
 die_sig:
 #ifdef CONFIG_DEBUG_USER
@@ -445,11 +457,12 @@ die_sig:
 	info.si_addr  = pc;
 
 	arm_notify_die("Oops - undefined instruction", regs, &info, 0, 6);
-
+#ifdef CONFIG_MTK_AEE_FEATURE
 do_undefinstr_exit:
 	if (!user_mode(regs)) {
 		thread->cpu_excp--;
 	}
+#endif
 }
 
 asmlinkage void do_unexp_fiq (struct pt_regs *regs)

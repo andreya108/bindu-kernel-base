@@ -707,10 +707,12 @@ unsigned long get_wchan(struct task_struct *p)
 	stack_bottom = ALIGN(stack_top, THREAD_SIZE);
 	do {
 	  if (frame.fp < (stack_top + 4) || frame.fp >= (stack_bottom - 4)) {
+#ifdef CONFIG_MTK_AEE_FEATURE
 	    /* remove stack dump debug info
 	    show_data(task_thread_info(p), THREAD_SIZE, "Stack");
 	    aee_kernel_warning("Kernel", "Stack corruption");
 	    */
+#endif
 	    return 0;
 	  }
 		ret = unwind_frame(&frame);
