@@ -347,15 +347,12 @@ KALLSYMS	= scripts/kallsyms
 PERL		= perl
 CHECK		= sparse
 
-#PTFLAGS	= -mcpu=cortex-a7 -mfpu=neon-vfpv4 \
-#		-ffast-math -fsingle-precision-constant \
-#		-fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr \
-#		-funsafe-math-optimizations -marm -std=gnu89
-
-OPTFLAGS    = -DNDEBUG -O3 -ffast-math -mtune=cortex-a7 -mcpu=cortex-a7 -marm -mfpu=neon-vfpv4 \
-			  -ftree-vectorize -mvectorize-with-neon-quad -munaligned-access -fgcse-lm -fgcse-sm \
-			  -fsingle-precision-constant -fforce-addr -fsched-spec-load \
-			  -fpredictive-commoning $(EXTRA_OPTFLAGS)
+OPTFLAGS	= -mcpu=cortex-a7 -mfpu=neon-vfpv4 \
+			-ffast-math -fsingle-precision-constant \
+			-fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr \
+			-ftree-vectorize -mvectorize-with-neon-quad -munaligned-access \
+			-DNDEBUG -O3 -marm -mtune=cortex-a7 \
+			-fpredictive-commoning $(EXTRA_OPTFLAGS)
 
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
@@ -598,6 +595,9 @@ ifneq ($(CONFIG_FRAME_WARN),0)
 KBUILD_CFLAGS += $(call cc-option,-Werror=frame-larger-than=1)
 KBUILD_CFLAGS += $(call cc-option,-Wframe-larger-than=${CONFIG_FRAME_WARN})
 endif
+
+# Tell gcc to never replace conditional load with a non-conditional one
+KBUILD_CFLAGS	+= $(call cc-option,--param=allow-store-data-races=0)
 
 # Force gcc to behave correct even for buggy distributions
 ifndef CONFIG_CC_STACKPROTECTOR
