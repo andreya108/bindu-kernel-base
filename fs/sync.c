@@ -114,7 +114,7 @@ static void sync_one_sb(struct super_block *sb, void *arg)
  */
 
 #ifndef CONFIG_DYNAMIC_FSYNC
-static
+//static
 #endif
 void sync_filesystems(int wait)
 {
@@ -264,7 +264,7 @@ int vfs_fsync_range(struct file *file, loff_t start, loff_t end, int datasync)
 	return file->f_op->fsync(file, start, end, datasync);
 #ifdef CONFIG_DYNAMIC_FSYNC
 		}
-#endif	
+#endif
 }
 EXPORT_SYMBOL(vfs_fsync_range);
 
