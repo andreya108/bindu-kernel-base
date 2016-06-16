@@ -50,7 +50,7 @@
 
 //add vmstat info with block tag log
 #include <linux/vmstat.h>
-#define FEATURE_STORAGE_VMSTAT_LOGGER
+//#define FEATURE_STORAGE_VMSTAT_LOGGER
 
 
 #include <linux/xlog.h>
@@ -60,7 +60,7 @@
 #include <mach/mt_storage_logger.h>
 #include <linux/mmc/sd_misc.h>
 
-#define FEATURE_STORAGE_PERF_INDEX
+//#define FEATURE_STORAGE_PERF_INDEX
 
 //enable storage log in user load
 #if 0
